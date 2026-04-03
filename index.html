@@ -14,21 +14,53 @@
     t.src=v;s=b.getElementsByTagName(e)[0];
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
+    
+    // Inicia os 3 Pixels que você usa
     fbq('init', '3742593532549192');
-        fbq('init', '1161301272315774');
-        fbq('init', '776851038631940');
+    fbq('init', '1161301272315774');
+    fbq('init', '776851038631940');
     fbq('track', 'PageView');
 
-    // Função para disparar o Lead no clique
-    function dispararLead() {
+    // Função que dispara o evento no Navegador E no Servidor (Vercel)
+    async function dispararLead(event) {
+        if (event) event.preventDefault(); 
+        
+        const linkDestino = "https://ri.redirecionar.online/";
+
+        // 1. Disparo via Navegador (Pixel padrão)
+        fbq('track', 'Contact'); 
         fbq('track', 'Lead');
-        fbq('track', 'Subscribe');
-        fbq('track', 'Contact');
+
+        // 2. Coleta de IDs de rastreio dos cookies
+        const fbp = document.cookie.split('; ').find(row => row.startsWith('_fbp='))?.split('=')[1];
+        const fbc = document.cookie.split('; ').find(row => row.startsWith('_fbc='))?.split('=')[1];
+
+        // 3. Chamada para a sua API na Vercel (Rastreio via Servidor)
+        try {
+            fetch('/api/lead', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    fbp: fbp,
+                    fbc: fbc,
+                    userAgent: navigator.userAgent
+                })
+            });
+        } catch (e) {
+            console.error("Erro na API:", e);
+        }
+
+        // 4. Aguarda 400ms para garantir o envio e redireciona
+        setTimeout(() => {
+            window.location.href = linkDestino;
+        }, 400);
     }
     </script>
+
     <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=915150557811828&ev=PageView&noscript=1"
+    src="https://www.facebook.com/tr?id=776851038631940&ev=PageView&noscript=1"
     /></noscript>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,900;1,900&display=swap');
 
@@ -206,7 +238,7 @@
             </div>
 
             <div class="btn-container">
-                <a href="https://ri.redirecionar.online/" class="btn-border-beam" onclick="dispararLead()">
+                <a href="https://ri.redirecionar.online/" class="btn-border-beam" onclick="dispararLead(event)">
                     <span class="btn-content">🔥 PEGAR BILHETE</span>
                 </a>
             </div>
