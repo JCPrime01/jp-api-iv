@@ -15,29 +15,42 @@
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
     
-    // Inicia os Pixels
     fbq('init', '1161301272315774');
     fbq('track', 'PageView');
 
-    // Função que dispara o evento no Navegador E no Servidor (Vercel) com DESDUPLICAÇÃO
-    async function dispararLead(event) {
+    // 1. FUNÇÃO PARA ABRIR O MODAL
+    function dispararLead(event) {
         if (event) event.preventDefault(); 
-        
-        // --- COLOQUE SEU LINK DO WHATSAPP ABAIXO ---
+        console.log("Tentando abrir o modal...");
+        const modal = document.getElementById('modalWhats');
+        if(modal) {
+            modal.style.display = 'flex';
+        } else {
+            console.error("Modal não encontrado no HTML");
+        }
+    }
+
+    // 2. FUNÇÃO PARA ENVIAR E REDIRECIONAR
+    async function finalizarLead() {
+        const phone = document.getElementById('userPhone').value;
         const linkDestino = "https://ri.redirecionar.online/"; 
 
-        // 1. GERAÇÃO DO EVENT ID ÚNICO (Essencial para Desduplicação)
+        if (phone.length < 14) {
+            alert("Por favor, digite seu WhatsApp completo com DDD.");
+            return;
+        }
+
         const eventId = 'lead_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+        const cleanPhone = phone.replace(/\D/g, ''); 
 
-        // 2. DISPARO VIA NAVEGADOR (PIXEL) COM EVENT_ID
-        fbq('track', 'Contact', {}, { eventID: eventId }); 
-        fbq('track', 'Lead', {}, { eventID: eventId });
+        // DISPAROS NAVEGADOR (Corrigido eventId)
+        fbq('track', 'Lead', { ph: cleanPhone }, { eventID: eventId });
+        fbq('track', 'Contact', { ph: cleanPhone }, { eventID: eventId });
 
-        // 3. COLETA DE IDs DE RASTREIO (Cookies)
         const fbp = document.cookie.split('; ').find(row => row.startsWith('_fbp='))?.split('=')[1];
         const fbc = document.cookie.split('; ').find(row => row.startsWith('_fbc='))?.split('=')[1];
 
-        // 4. CHAMADA PARA A API VERCEL (SERVIDOR) COM O MESMO EVENT_ID
+        // DISPARO SERVIDOR
         try {
             fetch('/api/lead', {
                 method: 'POST',
@@ -45,183 +58,103 @@
                 body: JSON.stringify({
                     fbp: fbp,
                     fbc: fbc,
+                    ph: cleanPhone,
                     userAgent: navigator.userAgent,
-                    eventId: eventId, // Envia o ID para bater com o do Pixel
-                    eventName: 'Contact'
+                    eventId: eventId,
+                    eventName: 'Lead'
                 })
             });
-        } catch (e) {
-            console.error("Erro na API:", e);
-        }
+        } catch (e) { console.error(e); }
 
-        // 5. AGUARDA 400ms E REDIRECIONA
-        setTimeout(() => {
-            window.location.href = linkDestino;
-        }, 400);
+        setTimeout(() => { window.location.href = linkDestino; }, 600);
     }
     </script>
 
-    <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=1161301272315774&ev=PageView&noscript=1"
-    /></noscript>
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,900;1,900&display=swap');
-
-        :root {
-            --primary: #00ff88;
-            --bg: #020202;
-        }
-
+        :root { --primary: #00ff88; --bg: #020202; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background-color: var(--bg);
-            color: #fff;
-            overflow-x: hidden;
-            min-height: 100vh;
-            font-family: 'Arial', sans-serif;
-        }
+        body { background-color: var(--bg); color: #fff; font-family: 'Arial', sans-serif; min-height: 100vh; }
 
         .lp-wrapper {
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 30px 0;
-            background: 
-                linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)),
-                url('api-iv.webp') center/cover no-repeat fixed;
+            position: relative; width: 100%; min-height: 100vh; display: flex; flex-direction: column;
+            justify-content: space-between; padding: 30px 0;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)), url('api-iv.webp') center/cover no-repeat fixed;
         }
 
-        .header-section { width: 100%; text-align: center; }
-        
-        .section-label { 
-            font-size: 11px; 
-            text-transform: uppercase; 
-            color: var(--primary); 
-            letter-spacing: 3px; 
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
+        .header-section { text-align: center; }
+        .section-label { color: var(--primary); letter-spacing: 3px; font-weight: bold; font-size: 11px; margin-bottom: 10px; text-transform: uppercase; }
 
         .carousel-container { display: flex; width: 100%; overflow: hidden; padding: 10px 0; }
-        .carousel-track { 
-            display: flex; 
-            gap: 15px; 
-            animation: scroll 35s linear infinite; 
-            padding-left: 15px; 
-            width: max-content;
-        }
+        .carousel-track { display: flex; gap: 15px; animation: scroll 35s linear infinite; width: max-content; }
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        @keyframes scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); } 
-        }
-
-        .game-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            min-width: 220px; 
-            padding: 15px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
+        .game-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); min-width: 220px; padding: 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
         .teams-row { display: flex; align-items: center; justify-content: center; gap: 15px; }
-        .team { display: flex; flex-direction: column; align-items: center; min-width: 70px; }
-        .team img { width: 35px; height: 35px; object-fit: contain; margin-bottom: 5px; }
-        .team span { font-size: 11px; font-weight: bold; white-space: nowrap; }
-        .vs { font-weight: 900; color: var(--primary); font-size: 14px; }
+        .team img { width: 35px; height: 35px; object-fit: contain; }
+        .team span { font-size: 11px; font-weight: bold; }
+        .vs { font-weight: 900; color: var(--primary); }
 
-        .headline { 
-            font-family: 'Kanit', sans-serif;
-            font-size: clamp(45px, 12vw, 60px); 
-            font-weight: 900; 
-            font-style: italic;
-            text-transform: uppercase; 
-            margin-top: 200px;
-            line-height: 0.85;
-            text-align: center;
-            text-shadow: 0 4px 20px rgba(0,0,0,1);
-        }
+        .headline { font-family: 'Kanit', sans-serif; font-size: clamp(45px, 12vw, 60px); font-weight: 900; text-transform: uppercase; margin-top: 150px; line-height: 0.85; text-align: center; }
 
-        .footer-section { width: 100%; display: flex; flex-direction: column; align-items: center; padding: 0 20px; margin-top: auto; }
+        .footer-section { padding: 0 20px; display: flex; flex-direction: column; align-items: center; margin-top: auto; }
+        .alert-box { background: rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; margin-bottom: 15px; max-width: 360px; text-align: center; }
+        .alert-box p { font-size: 12px; } .alert-box span { color: #ff8800; font-weight: bold; }
 
-        .alert-box {
-            width: 100%;
-            max-width: 360px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 15px;
-            backdrop-filter: blur(10px);
-        }
-
-        .alert-box p { font-size: 12px; color: #fff; line-height: 1.4; text-align: center; }
-        .alert-box span { color: #ff8800; font-weight: bold; }
-
-        .btn-container { width: 100%; max-width: 360px; }
-
-        .btn-border-beam {
-            position: relative; padding: 2px; border-radius: 18px; overflow: hidden; display: block; text-decoration: none;
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
-        }
-
-        .btn-border-beam::before {
-            content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: conic-gradient(transparent, transparent, var(--primary), transparent);
-            animation: rotate 3s linear infinite;
-        }
-
+        .btn-container { width: 100%; max-width: 360px; cursor: pointer; text-decoration: none; }
+        .btn-border-beam { position: relative; padding: 2px; border-radius: 18px; overflow: hidden; background: #000; box-shadow: 0 0 20px rgba(0, 255, 136, 0.4); }
+        .btn-border-beam::before { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(transparent, transparent, var(--primary), transparent); animation: rotate 3s linear infinite; }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .btn-content { position: relative; background: #000; color: #fff; padding: 20px; border-radius: 16px; font-size: 18px; font-weight: 900; text-transform: uppercase; z-index: 5; display: block; text-align: center; }
 
-        .btn-content {
-            position: relative; background: #000; color: #fff; padding: 20px; border-radius: 16px;
-            font-size: 18px; font-weight: 900; text-transform: uppercase; display: block; z-index: 5; text-align: center;
-        }
-
+        /* MODAL */
+        #modalWhats { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 10000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: #111; border: 2px solid var(--primary); padding: 30px; border-radius: 25px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 0 40px rgba(0,255,136,0.3); }
+        .input-zap { width: 100%; padding: 18px; border-radius: 12px; border: 1px solid #333; background: #222; color: #fff; font-size: 20px; text-align: center; margin: 20px 0; outline: none; }
+        .btn-enviar { width: 100%; background: var(--primary); color: #000; padding: 18px; border-radius: 12px; font-weight: 900; text-transform: uppercase; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div class="lp-wrapper">
-        
         <div class="header-section">
             <p class="section-label">Jogos do Dia</p>
-            
             <div class="carousel-container">
                 <div class="carousel-track">
                     <div class="game-card"><div class="teams-row"><div class="team"><img src="Red Bull.webp"><span>Bragantino</span></div><div class="vs">VS</div><div class="team"><img src="https://crests.football-data.org/1783.png"><span>Flamengo</span></div></div></div>
                     <div class="game-card"><div class="teams-row"><div class="team"><img src="Santos.webp"><span>Santos</span></div><div class="vs">VS</div><div class="team"><img src="Remo.webp"><span>Remo</span></div></div></div>
                     <div class="game-card"><div class="teams-row"><div class="team"><img src="https://crests.football-data.org/1769.png"><span>Palmeiras</span></div><div class="vs">VS</div><div class="team"><img src="https://crests.football-data.org/1767.png"><span>Grêmio</span></div></div></div>
-                    <div class="game-card"><div class="teams-row"><div class="team"><img src="Chapeco.webp"><span>Chapecoense</span></div><div class="vs">VS</div><div class="team"><img src="Atlético Mineiro.webp"><span>Atlético-MG</span></div></div></div>
                     <div class="game-card"><div class="teams-row"><div class="team"><img src="Red Bull.webp"><span>Bragantino</span></div><div class="vs">VS</div><div class="team"><img src="https://crests.football-data.org/1783.png"><span>Flamengo</span></div></div></div>
                     <div class="game-card"><div class="teams-row"><div class="team"><img src="Santos.webp"><span>Santos</span></div><div class="vs">VS</div><div class="team"><img src="Remo.webp"><span>Remo</span></div></div></div>
                 </div>
             </div>
-
             <h1 class="headline">BILHETE<br><span style="color: var(--primary)">LIBERADO</span></h1>
         </div>
 
         <div class="footer-section">
-            <div class="alert-box">
-                <p><span>*</span> Fale comigo agora, e em breve vou mandar uma oportunidade para forrarmos juntos!</p>
-            </div>
-
-            <div class="btn-container">
-                <a href="" class="btn-border-beam" onclick="dispararLead(event)">
+            <div class="alert-box"><p><span>*</span> Confirme seu WhatsApp para receber as odds exclusivas do Jota.</p></div>
+            
+            <div class="btn-container" onclick="dispararLead(event)">
+                <div class="btn-border-beam">
                     <span class="btn-content">🔥 PEGAR BILHETE</span>
-                </a>
+                </div>
             </div>
         </div>
-
     </div>
 
+    <div id="modalWhats">
+        <div class="modal-content">
+            <h2 style="color: var(--primary); font-family: 'Kanit';">SÓ MAIS UM PASSO!</h2>
+            <p style="margin-top:10px;">Informe seu WhatsApp para receber as <b>ODDS EXCLUSIVAS</b> no seu número:</p>
+            <input type="tel" id="userPhone" class="input-zap" placeholder="(00) 00000-0000">
+            <button onclick="finalizarLead()" class="btn-enviar">VALIDAR E RECEBER 🔥</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script>
+        $(document).ready(function(){ $('#userPhone').mask('(00) 00000-0000'); });
+    </script>
 </body>
 </html>
