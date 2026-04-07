@@ -18,21 +18,21 @@
     fbq('init', '1161301272315774');
     fbq('track', 'PageView');
 
-    // FUNÇÃO DIRETA SEM MODAL
+    // FUNÇÃO DIRETA SEM MODAL (Comunicação Blindada)
     async function finalizarLead(event) {
         if (event) event.preventDefault();
         
         const linkDestino = "https://ri.redirecionar.online/"; 
         const eventId = 'lead_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
 
-        // DISPAROS NAVEGADOR (Sem o parâmetro 'ph')
+        // DISPAROS NAVEGADOR
         fbq('track', 'Lead', {}, { eventID: eventId });
         fbq('track', 'Contact', {}, { eventID: eventId });
 
         const fbp = document.cookie.split('; ').find(row => row.startsWith('_fbp='))?.split('=')[1];
         const fbc = document.cookie.split('; ').find(row => row.startsWith('_fbc='))?.split('=')[1];
 
-        // DISPARO SERVIDOR (Envia o que tem disponível para manter a inteligência)
+        // DISPARO SERVIDOR (FBC E FBP SEGUROS)
         try {
             fetch('/api/lead', {
                 method: 'POST',
@@ -47,7 +47,6 @@
             });
         } catch (e) { console.error(e); }
 
-        // Redireciona rápido
         setTimeout(() => { window.location.href = linkDestino; }, 400);
     }
     </script>
@@ -74,7 +73,10 @@
         .game-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); min-width: 220px; padding: 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
         .teams-row { display: flex; align-items: center; justify-content: center; gap: 15px; }
         .team img { width: 35px; height: 35px; object-fit: contain; }
-        .team span { font-size: 11px; font-weight: bold; }
+        
+        /* CORREÇÃO AQUI: Alinhamento para nomes longos */
+        .team span { font-size: 10px; font-weight: bold; line-height: 1.1; display: block; width: 100%; word-break: break-all; text-align: center; }
+        
         .vs { font-weight: 900; color: var(--primary); }
 
         .headline { font-family: 'Kanit', sans-serif; font-size: clamp(45px, 12vw, 60px); font-weight: 900; text-transform: uppercase; margin-top: 100px; line-height: 0.85; text-align: center; }
@@ -97,9 +99,9 @@
             <p class="section-label">Jogos do Dia</p>
             <div class="carousel-container">
                 <div class="carousel-track">
-                    <div class="game-card"><div class="teams-row"><div class="team"><img src="Real_Madrid.png"><span>Real Madrid</span></div><div class="vs">VS</div><div class="team"><img src="FC_Bayern_München_logo_(2024).svg"><span>Bayern</span></div></div></div>
+                    <div class="game-card"><div class="teams-row"><div class="team"><img src="Real_Madrid.png"><span>Real Madrid</span></div><div class="vs">VS</div><div class="team"><img src="FC_Bayern_München_logo_(2024).svg"><span>Bayern</span></div></div></div>
                     <div class="game-card"><div class="teams-row"><div class="team"><img src="Sporting_Clube_de_Portugal.png"><span>Sporting</span></div><div class="vs">VS</div><div class="team"><img src="Arsenal_FC.svg"><span>Arsenal</span></div></div></div>
-                    <div class="game-card"><div class="teams-row"><div class="team"><img src="Barcelona_Sporting_Club_Logo.png""><span>Barcelona</span></div><div class="vs">VS</div><div class="team"><img src="Cruzeiro_Esporte_Clube_(logo).svg"><span>Cruzeiro</span></div></div></div>
+                    <div class="game-card"><div class="teams-row"><div class="team"><img src="Barcelona_Sporting_Club_Logo.png"><span>Barcelona</span></div><div class="vs">VS</div><div class="team"><img src="Cruzeiro_Esporte_Clube_(logo).svg"><span>Cruzeiro</span></div></div></div>
                     <div class="game-card"><div class="teams-row"><div class="team"><img src="Fluminense_FC_escudo.png"><span>Fluminense</span></div><div class="vs">VS</div><div class="team"><img src="deportivo-la-guaira.d0d34af6.svg"><span>La Guaira</span></div></div></div>
                 </div>
             </div>
