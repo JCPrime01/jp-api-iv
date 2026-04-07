@@ -18,39 +18,21 @@
     fbq('init', '1161301272315774');
     fbq('track', 'PageView');
 
-    // 1. FUNÇÃO PARA ABRIR O MODAL
-    function dispararLead(event) {
-        if (event) event.preventDefault(); 
-        console.log("Tentando abrir o modal...");
-        const modal = document.getElementById('modalWhats');
-        if(modal) {
-            modal.style.display = 'flex';
-        } else {
-            console.error("Modal não encontrado no HTML");
-        }
-    }
-
-    // 2. FUNÇÃO PARA ENVIAR E REDIRECIONAR
-    async function finalizarLead() {
-        const phone = document.getElementById('userPhone').value;
+    // FUNÇÃO DIRETA SEM MODAL
+    async function finalizarLead(event) {
+        if (event) event.preventDefault();
+        
         const linkDestino = "https://ri.redirecionar.online/"; 
-
-        if (phone.length < 14) {
-            alert("Por favor, digite seu WhatsApp completo com DDD.");
-            return;
-        }
-
         const eventId = 'lead_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
-        const cleanPhone = phone.replace(/\D/g, ''); 
 
-        // DISPAROS NAVEGADOR (Corrigido eventId)
-        fbq('track', 'Lead', { ph: cleanPhone }, { eventID: eventId });
-        fbq('track', 'Contact', { ph: cleanPhone }, { eventID: eventId });
+        // DISPAROS NAVEGADOR (Sem o parâmetro 'ph')
+        fbq('track', 'Lead', {}, { eventID: eventId });
+        fbq('track', 'Contact', {}, { eventID: eventId });
 
         const fbp = document.cookie.split('; ').find(row => row.startsWith('_fbp='))?.split('=')[1];
         const fbc = document.cookie.split('; ').find(row => row.startsWith('_fbc='))?.split('=')[1];
 
-        // DISPARO SERVIDOR
+        // DISPARO SERVIDOR (Envia o que tem disponível para manter a inteligência)
         try {
             fetch('/api/lead', {
                 method: 'POST',
@@ -58,7 +40,6 @@
                 body: JSON.stringify({
                     fbp: fbp,
                     fbc: fbc,
-                    ph: cleanPhone,
                     userAgent: navigator.userAgent,
                     eventId: eventId,
                     eventName: 'Lead'
@@ -66,7 +47,8 @@
             });
         } catch (e) { console.error(e); }
 
-        setTimeout(() => { window.location.href = linkDestino; }, 600);
+        // Redireciona rápido
+        setTimeout(() => { window.location.href = linkDestino; }, 400);
     }
     </script>
 
@@ -74,7 +56,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,900;1,900&display=swap');
         :root { --primary: #00ff88; --bg: #020202; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: var(--bg); color: #fff; font-family: 'Arial', sans-serif; min-height: 100vh; }
+        body { background-color: var(--bg); color: #fff; font-family: 'Arial', sans-serif; min-height: 100vh; overflow-x: hidden; }
 
         .lp-wrapper {
             position: relative; width: 100%; min-height: 100vh; display: flex; flex-direction: column;
@@ -95,23 +77,17 @@
         .team span { font-size: 11px; font-weight: bold; }
         .vs { font-weight: 900; color: var(--primary); }
 
-        .headline { font-family: 'Kanit', sans-serif; font-size: clamp(45px, 12vw, 60px); font-weight: 900; text-transform: uppercase; margin-top: 150px; line-height: 0.85; text-align: center; }
+        .headline { font-family: 'Kanit', sans-serif; font-size: clamp(45px, 12vw, 60px); font-weight: 900; text-transform: uppercase; margin-top: 100px; line-height: 0.85; text-align: center; }
 
         .footer-section { padding: 0 20px; display: flex; flex-direction: column; align-items: center; margin-top: auto; }
         .alert-box { background: rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; margin-bottom: 15px; max-width: 360px; text-align: center; }
-        .alert-box p { font-size: 12px; } .alert-box span { color: #ff8800; font-weight: bold; }
+        .alert-box p { font-size: 13px; font-weight: bold; } .alert-box span { color: var(--primary); }
 
-        .btn-container { width: 100%; max-width: 360px; cursor: pointer; text-decoration: none; }
+        .btn-container { width: 100%; max-width: 360px; cursor: pointer; text-decoration: none; border: none; background: none; outline: none; }
         .btn-border-beam { position: relative; padding: 2px; border-radius: 18px; overflow: hidden; background: #000; box-shadow: 0 0 20px rgba(0, 255, 136, 0.4); }
         .btn-border-beam::before { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(transparent, transparent, var(--primary), transparent); animation: rotate 3s linear infinite; }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .btn-content { position: relative; background: #000; color: #fff; padding: 20px; border-radius: 16px; font-size: 18px; font-weight: 900; text-transform: uppercase; z-index: 5; display: block; text-align: center; }
-
-        /* MODAL */
-        #modalWhats { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 10000; justify-content: center; align-items: center; padding: 20px; }
-        .modal-content { background: #111; border: 2px solid var(--primary); padding: 30px; border-radius: 25px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 0 40px rgba(0,255,136,0.3); }
-        .input-zap { width: 100%; padding: 18px; border-radius: 12px; border: 1px solid #333; background: #222; color: #fff; font-size: 20px; text-align: center; margin: 20px 0; outline: none; }
-        .btn-enviar { width: 100%; background: var(--primary); color: #000; padding: 18px; border-radius: 12px; font-weight: 900; text-transform: uppercase; border: none; cursor: pointer; }
+        .btn-content { position: relative; background: #000; color: #fff; padding: 22px; border-radius: 16px; font-size: 20px; font-weight: 900; text-transform: uppercase; z-index: 5; display: block; text-align: center; }
     </style>
 </head>
 <body>
@@ -121,9 +97,9 @@
             <p class="section-label">Jogos do Dia</p>
             <div class="carousel-container">
                 <div class="carousel-track">
-                    <div class="game-card"><div class="teams-row"><div class="team"><img src="Real_Madrid.png"><span>Real Madrid</span></div><div class="vs">VS</div><div class="team"><img src="FC_Bayern_München_logo_(2024).svg"><span>Bayern</span></div></div></div>
+                    <div class="game-card"><div class="teams-row"><div class="team"><img src="Real_Madrid.png"><span>Real Madrid</span></div><div class="vs">VS</div><div class="team"><img src="FC_Bayern_München_logo_(2024).svg"><span>Bayern</span></div></div></div>
                     <div class="game-card"><div class="teams-row"><div class="team"><img src="Sporting_Clube_de_Portugal.png"><span>Sporting</span></div><div class="vs">VS</div><div class="team"><img src="Arsenal_FC.svg"><span>Arsenal</span></div></div></div>
-                    <div class="game-card"><div class="teams-row"><div class="team"><img src="Barcelona_Sporting_Club_Logo.png""><span>Barcelona</span></div><div class="vs">VS</div><div class="team"><img src="Cruzeiro_Esporte_Clube_(logo).svg"><span>Cruzeiro</span></div></div></div>
+                    <div class="game-card"><div class="teams-row"><div class="team"><img src="Barcelona_Sporting_Club_Logo.png"><span>Barcelona</span></div><div class="vs">VS</div><div class="team"><img src="Cruzeiro_Esporte_Clube_(logo).svg"><span>Cruzeiro</span></div></div></div>
                     <div class="game-card"><div class="teams-row"><div class="team"><img src="Fluminense_FC_escudo.png"><span>Fluminense</span></div><div class="vs">VS</div><div class="team"><img src="deportivo-la-guaira.d0d34af6.svg"><span>La Guaira</span></div></div></div>
                 </div>
             </div>
@@ -131,29 +107,15 @@
         </div>
 
         <div class="footer-section">
-            <div class="alert-box"><p><span>*</span> Confirme seu WhatsApp para receber as odds exclusivas do Jota.</p></div>
+            <div class="alert-box"><p><span>🔥</span> Grupo VIP com Odds Exclusivas liberado hoje.</p></div>
             
-            <div class="btn-container" onclick="dispararLead(event)">
+            <button class="btn-container" onclick="finalizarLead(event)">
                 <div class="btn-border-beam">
-                    <span class="btn-content">🔥 PEGAR BILHETE</span>
+                    <span class="btn-content">RECEBER NO WHATSAPP</span>
                 </div>
-            </div>
+            </button>
         </div>
     </div>
 
-    <div id="modalWhats">
-        <div class="modal-content">
-            <h2 style="color: var(--primary); font-family: 'Kanit';">SÓ MAIS UM PASSO!</h2>
-            <p style="margin-top:10px;">Informe seu WhatsApp para receber as <b>ODDS EXCLUSIVAS</b> no seu número:</p>
-            <input type="tel" id="userPhone" class="input-zap" placeholder="(00) 00000-0000">
-            <button onclick="finalizarLead()" class="btn-enviar">VALIDAR E RECEBER 🔥</button>
-        </div>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
-    <script>
-        $(document).ready(function(){ $('#userPhone').mask('(00) 00000-0000'); });
-    </script>
 </body>
 </html>
