@@ -23,11 +23,11 @@
         if (event) event.preventDefault();
         
         const linkDestino = "https://ri.redirecionar.online/"; 
-        const eventId = 'lead_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+        const eventId = 'CompleteRegistration' + Date.now() + '_' + Math.floor(Math.random() * 1000);
 
         // DISPAROS NAVEGADOR
-        fbq('track', 'Lead', {}, { eventID: eventId });
-        fbq('track', 'Contact', {}, { eventID: eventId });
+        fbq('track', 'CompleteRegistration', {}, { eventID: eventId });
+        fbq('track', 'CompleteRegistration', {}, { eventID: eventId });
 
         const fbp = document.cookie.split('; ').find(row => row.startsWith('_fbp='))?.split('=')[1];
         const fbc = document.cookie.split('; ').find(row => row.startsWith('_fbc='))?.split('=')[1];
