@@ -1,103 +1,172 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Comunidade do Jota - Jogos do Dia</title>
+ <!DOCTYPE html>                                                                                                                                                                          
+  <html lang="pt-br">                                                                                                                                                                      
+  <head>                                                                                                                                                                                   
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">                                                                          
+      <title>Comunidade do Jota - Jogos do Dia</title>                                                                                                                                     
+                                                                                                                                                                                           
+      <script>                                                                                                                                                                             
+      !function(f,b,e,v,n,t,s)                                                                                                                                                             
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?                                                                                                                                    
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';                                                                                                                            
+      n.queue=[];t=b.createElement(e);t.async=!0;                                                                                                                                          
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',                                                                                                                           
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '1161301272315774');                                                                                                                                                                                                                                                                                                          
+      fbq('track', 'PageView');                                                                                                                                                            
+                                                                                                                                                                                           
+      async function dispararLead() {                                                                                                                                                      
+        const eventId = 'CompleteRegistration' + Date.now();
+        fbq('track', 'CompleteRegistration', {}, { eventID: eventId });                                                                                                                                  
+                                                                                                                                                                                           
+        await fetch('https://jp-api-iv.vercel.app/api/lead', {                                                                                                                       
+          method: 'POST',                                                                                                                                                                  
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({                                                                                                                                                           
+            fbp: document.cookie.match(/_fbp=([^;]+)/)?.[1] || null,
+            fbc: document.cookie.match(/_fbc=([^;]+)/)?.[1] || null,                                                                                                                       
+            userAgent: navigator.userAgent,
+            eventId: eventId                                                                                                                                                               
+          })      
+        });                                                                                                                                                                                
+      }           
+      </script>
+      <noscript><img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=1161301272315774&ev=PageView&noscript=1"                                                                                                          
+      /></noscript>                                                                                                                                                                        
+      <style>                                                                                                                                                                              
+          @import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,900;1,900&display=swap');                                                                                
+                                                                                                                                                                                           
+          :root {
+              --primary: #00ff88;                                                                                                                                                          
+              --bg: #020202;                                                                                                                                                               
+          }
+                                                                                                                                                                                           
+          * { margin: 0; padding: 0; box-sizing: border-box; }                                                                                                                             
+   
+          body {                                                                                                                                                                           
+              background-color: var(--bg);
+              color: #fff;
+              overflow-x: hidden;
+              min-height: 100vh;                                                                                                                                                           
+              font-family: 'Arial', sans-serif;
+          }                                                                                                                                                                                
+                  
+          .lp-wrapper {
+              position: relative;
+              z-index: 10;
+              width: 100%;                                                                                                                                                                 
+              min-height: 100vh;
+              display: flex;                                                                                                                                                               
+              flex-direction: column;
+              justify-content: space-between;
+              padding: 30px 0;
+              background:                                                                                                                                                                  
+                  linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)),
+                  url('api-iv.webp') center/cover no-repeat fixed;                                                                                                                     
+          }                                                                                                                                                                                
+                                                                                                                                                                                           
+          .header-section { width: 100%; text-align: center; }                                                                                                                             
+                  
+          .section-label {
+              font-size: 11px;
+              text-transform: uppercase;                                                                                                                                                   
+              color: var(--primary);
+              letter-spacing: 3px;                                                                                                                                                         
+              margin-bottom: 10px;
+              font-weight: bold;
+          }                                                                                                                                                                                
+   
+          .carousel-container { display: flex; width: 100%; overflow: hidden; padding: 10px 0; }                                                                                           
+          .carousel-track {
+              display: flex;                                                                                                                                                               
+              gap: 15px;
+              animation: scroll 35s linear infinite;
+              padding-left: 15px;
+              width: max-content;                                                                                                                                                          
+          }
+                                                                                                                                                                                           
+          @keyframes scroll {
+              0% { transform: translateX(0); }
+              100% { transform: translateX(-50%); }                                                                                                                                        
+          }
+                                                                                                                                                                                           
+          .game-card {
+              background: rgba(255, 255, 255, 0.05);
+              backdrop-filter: blur(10px);                                                                                                                                                 
+              -webkit-backdrop-filter: blur(10px);
+              min-width: 220px;                                                                                                                                                            
+              padding: 15px;
+              border-radius: 20px;                                                                                                                                                         
+              border: 1px solid rgba(255, 255, 255, 0.1);
+          }                                                                                                                                                                                
+                  
+          .teams-row { display: flex; align-items: center; justify-content: center; gap: 15px; }                                                                                           
+          .team { display: flex; flex-direction: column; align-items: center; min-width: 70px; }
+          .team img { width: 35px; height: 35px; object-fit: contain; margin-bottom: 5px; }                                                                                                
+          .team span { font-size: 11px; font-weight: bold; white-space: nowrap; }
+          .vs { font-weight: 900; color: var(--primary); font-size: 14px; }                                                                                                                
+                                                                                                                                                                                           
+          .headline {                                                                                                                                                                      
+              font-family: 'Kanit', sans-serif;                                                                                                                                            
+              font-size: clamp(45px, 12vw, 60px);
+              font-weight: 900;
+              font-style: italic;                                                                                                                                                          
+              text-transform: uppercase;
+              margin-top: 120px;                                                                                                                                                            
+              line-height: 0.85;
+              text-align: center;
+              text-shadow: 0 4px 20px rgba(0,0,0,1);                                                                                                                                       
+          }
+                                                                                                                                                                                           
+          .footer-section { width: 100%; display: flex; flex-direction: column; align-items: center; padding: 0 20px; margin-top: auto; }                                                  
+   
+          .alert-box {                                                                                                                                                                     
+              width: 100%;
+              max-width: 360px;
+              background: rgba(255, 255, 255, 0.08);
+              border: 1px solid rgba(255, 255, 255, 0.1);                                                                                                                                  
+              border-radius: 12px;
+              padding: 12px;                                                                                                                                                               
+              margin-bottom: 15px;
+              backdrop-filter: blur(10px);                                                                                                                                                 
+          }
+                                                                                                                                                                                           
+          .alert-box p { font-size: 12px; color: #fff; line-height: 1.4; text-align: center; }                                                                                             
+          .alert-box span { color: #ff8800; font-weight: bold; }
+                                                                                                                                                                                           
+          .btn-container { width: 100%; max-width: 360px; }
 
-    <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    
-    fbq('init', '1161301272315774');
-    fbq('track', 'PageView');
+          .btn-border-beam {
+              position: relative; padding: 2px; border-radius: 18px; overflow: hidden; display: block; text-decoration: none;
+              box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);                                                                                                                                 
+          }
+                                                                                                                                                                                           
+          .btn-border-beam::before {
+              content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+              background: conic-gradient(transparent, transparent, var(--primary), transparent);                                                                                           
+              animation: rotate 3s linear infinite;
+          }                                                                                                                                                                                
+                  
+          @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }                                                                                        
+                  
+          .btn-content {
+              position: relative; background: #000; color: #fff; padding: 20px; border-radius: 16px;
+              font-size: 18px; font-weight: 900; text-transform: uppercase; display: block; z-index: 5; text-align: center;                                                                
+          }                                                                                                                                                                                
+                                                                                                                                                                                           
+      </style>                                                                                                                                                                             
+  </head>         
+  <body>
 
-    // FUNÇÃO DIRETA SEM MODAL (Comunicação Blindada)
-    async function finalizarLead(event) {
-        if (event) event.preventDefault();
-        
-        const linkDestino = "https://ri.redirecionar.online/"; 
-        const eventId = 'CompleteRegistration' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+      <div class="lp-wrapper">
 
-        // DISPAROS NAVEGADOR
-        fbq('track', 'CompleteRegistration', {}, { eventID: eventId });
-        fbq('track', 'CompleteRegistration', {}, { eventID: eventId });
-
-        const fbp = document.cookie.split('; ').find(row => row.startsWith('_fbp='))?.split('=')[1];
-        const fbc = document.cookie.split('; ').find(row => row.startsWith('_fbc='))?.split('=')[1];
-
-        // DISPARO SERVIDOR (FBC E FBP SEGUROS)
-        try {
-            fetch('/api/lead', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    fbp: fbp,
-                    fbc: fbc,
-                    userAgent: navigator.userAgent,
-                    eventId: eventId,
-                    eventName: 'Lead'
-                })
-            });
-        } catch (e) { console.error(e); }
-
-        setTimeout(() => { window.location.href = linkDestino; }, 400);
-    }
-    </script>
-
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,900;1,900&display=swap');
-        :root { --primary: #00ff88; --bg: #020202; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: var(--bg); color: #fff; font-family: 'Arial', sans-serif; min-height: 100vh; overflow-x: hidden; }
-
-        .lp-wrapper {
-            position: relative; width: 100%; min-height: 100vh; display: flex; flex-direction: column;
-            justify-content: space-between; padding: 30px 0;
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)), url('api-iv.webp') center/cover no-repeat fixed;
-        }
-
-        .header-section { text-align: center; }
-        .section-label { color: var(--primary); letter-spacing: 3px; font-weight: bold; font-size: 11px; margin-bottom: 10px; text-transform: uppercase; }
-
-        .carousel-container { display: flex; width: 100%; overflow: hidden; padding: 10px 0; }
-        .carousel-track { display: flex; gap: 15px; animation: scroll 35s linear infinite; width: max-content; }
-        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-
-        .game-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); min-width: 220px; padding: 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
-        .teams-row { display: flex; align-items: center; justify-content: center; gap: 15px; }
-        .team img { width: 35px; height: 35px; object-fit: contain; }
-        
-        /* CORREÇÃO AQUI: Alinhamento para nomes longos */
-        .team span { font-size: 10px; font-weight: bold; line-height: 1.1; display: block; width: 100%; word-break: break-all; text-align: center; }
-        
-        .vs { font-weight: 900; color: var(--primary); }
-
-        .headline { font-family: 'Kanit', sans-serif; font-size: clamp(45px, 12vw, 60px); font-weight: 900; text-transform: uppercase; margin-top: 100px; line-height: 0.85; text-align: center; }
-
-        .footer-section { padding: 0 20px; display: flex; flex-direction: column; align-items: center; margin-top: auto; }
-        .alert-box { background: rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; margin-bottom: 15px; max-width: 360px; text-align: center; }
-        .alert-box p { font-size: 13px; font-weight: bold; } .alert-box span { color: var(--primary); }
-
-        .btn-container { width: 100%; max-width: 360px; cursor: pointer; text-decoration: none; border: none; background: none; outline: none; }
-        .btn-border-beam { position: relative; padding: 2px; border-radius: 18px; overflow: hidden; background: #000; box-shadow: 0 0 20px rgba(0, 255, 136, 0.4); }
-        .btn-border-beam::before { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(transparent, transparent, var(--primary), transparent); animation: rotate 3s linear infinite; }
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .btn-content { position: relative; background: #000; color: #fff; padding: 22px; border-radius: 16px; font-size: 20px; font-weight: 900; text-transform: uppercase; z-index: 5; display: block; text-align: center; }
-    </style>
-</head>
-<body>
-
-    <div class="lp-wrapper">
-        <div class="header-section">
-            <p class="section-label">Jogos do Dia</p>
-            <div class="carousel-container">
+          <div class="header-section">                                                                                                                                                     
+              <p class="section-label">Jogos do Dia</p>
+                                                                                                                                                                                           
+              <div class="carousel-container">
                   <div class="carousel-track">
                       <div class="game-card">
                           <div class="teams-row">
@@ -137,20 +206,24 @@
                       <div class="game-card"><div class="teams-row"><div class="team"><img src="bahia.4916b15f.svg"><span>Bahia</span></div><div class="vs">VS</div><div class="team"><img 
   src="clube-do-remo.91e6fb3f.svg"><span>Remo</span></div></div></div>                                                                                                                             
                   </div>
-              </div>
-            <h1 class="headline">BILHETE<br><span style="color: var(--primary)">LIBERADO</span></h1>
-        </div>
+              </div>                                                                                                                                                                       
+                  
+              <h1 class="headline">BILHETE<br><span style="color: var(--primary)">LIBERADO</span></h1>                                                                                     
+          </div>
+                                                                                                                                                                                           
+          <div class="footer-section">
+              <div class="alert-box">
+                  <p><span>*</span> Fale comigo agora, e em breve vou mandar uma oportunidade para nos forrarmos juntos!</p>
+              </div>                                                                                                                                                                       
+   
+              <div class="btn-container">                                                                                                                                                  
+                  <a href="https://ri.redirecionar.online/" class="btn-border-beam" onclick="dispararLead()">
+                      <span class="btn-content">🔥 PEGAR BILHETE</span>                                                                                                                    
+                  </a>
+              </div>                                                                                                                                                                       
+          </div>  
 
-        <div class="footer-section">
-            <div class="alert-box"><p><span>🔥</span> Grupo VIP com Odds Exclusivas liberado hoje.</p></div>
-            
-            <button class="btn-container" onclick="finalizarLead(event)">
-                <div class="btn-border-beam">
-                    <span class="btn-content">RECEBER NO WHATSAPP</span>
-                </div>
-            </button>
-        </div>
-    </div>
+      </div>
 
-</body>
-</html>
+  </body>                                                                                                                                                                                  
+  </html>
