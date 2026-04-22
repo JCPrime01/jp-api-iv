@@ -14,7 +14,7 @@ export default async function handler(req, res) {
 
   const payload = {
     data: [{
-      event_name: 'Contact',
+      event_name: 'CompleteRegistration',
       event_time: Math.floor(Date.now() / 1000),
       event_id: eventId, // ESSENCIAL para desduplicação
       action_source: 'website',
