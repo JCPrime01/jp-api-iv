@@ -1,234 +1,245 @@
   <!DOCTYPE html>
-  <html lang="pt-br">                         
-  <head>                                      
-      <meta charset="UTF-8">              
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">                                                                          
-      <title>Comunidade do Jota - Jogos do Dia</title>                                                                                                                                     
-                                                                                                                                                                                           
-      <!-- Métrico -->                                                                                                                                                                     
-      <script async src="https://api.metrito.com/v2/tracking/tag?id=69e986cc2312329da42f27d2"></script>                                                                                  
-                                                                                                                                                                                           
-      <!-- Meta Pixel -->                 
-      <script>                                                                                                                                                                             
-      !function(f,b,e,v,n,t,s)                                                                                                                                                             
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};                                                                                                                            
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';                                                                                                                            
-      n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];                                                                                                                                              
-      s.parentNode.insertBefore(t,s)}(window, document,'script',                                                                                                                           
-      'https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', '1290557609656779');                                                                                                                                                     
-      fbq('track', 'PageView');                                                                                                                                                          
-                                                                                                                                                                                           
-      async function dispararLead() {                                                                                                                                                      
-        const eventId = 'CompleteRegistration' + Date.now();
-        fbq('track', 'CompleteRegistration', {}, { eventID: eventId });                                                                                                                    
-                                                                                                                                                                                         
-        await fetch('https://jp-api-iv.vercel.app/api/lead', {                                                                                                                             
-          method: 'POST',                                                                                                                                                                  
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({                                                                                                                                                           
-            fbp: document.cookie.match(/_fbp=([^;]+)/)?.[1] || null,                                                                                                                     
-            fbc: document.cookie.match(/_fbc=([^;]+)/)?.[1] || null,                                                                                                                       
-            userAgent: navigator.userAgent,                                                                                                                                              
-            eventId: eventId                                                                                                                                                               
-          })                                                                                                                                                                               
-        });                                                                                                                                                                                
-      }                                                                                                                                                                                    
-      </script>                                                                                                                                                                            
-      <noscript><img height="1" width="1" style="display:none"                                                                                                                           
-      src="https://www.facebook.com/tr?id=1161301272315774&ev=PageView&noscript=1"
-      /></noscript>                           
-                                          
-      <style>                                                                                                                                                                              
-          @import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,900;1,900&display=swap');                                                                                
-                                                                                                                                                                                           
-          :root {                                                                                                                                                                          
-              --primary: #00ff88;                                                                                                                                                        
-              --bg: #020202;                                                                                                                                                               
-          }                                   
-                                                                                                                                                                                           
-          * { margin: 0; padding: 0; box-sizing: border-box; }                                                                                                                           
-                                                                                                                                                                                           
-          body {                              
-              background-color: var(--bg);                                                                                                                                                 
-              color: #fff;                                                                                                                                                               
-              overflow-x: hidden;                                                                                                                                                          
-              min-height: 100vh;
-              font-family: 'Arial', sans-serif;                                                                                                                                            
-          }                                                                                                                                                                              
+  <html lang="pt-br">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+      <title>Comunidade do Jota - Jogos do Dia</title>
 
-          .lp-wrapper {                                                                                                                                                                    
+      <!-- Métrico -->
+      <script async src="https://api.metrito.com/v2/tracking/tag?id=69e986cc2312329da42f27d2"></script>
+
+      <!-- Meta Pixel -->
+      <script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '1290557609656779');
+      fbq('track', 'PageView');
+
+      // Captura fbclid da URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const fbclid = urlParams.get('fbclid') || null;
+
+      async function dispararLead() {
+        const eventId = 'CompleteRegistration' + Date.now();
+        const fbp = document.cookie.match(/_fbp=([^;]+)/)?.[1] || null;
+        const fbc = document.cookie.match(/_fbc=([^;]+)/)?.[1] || null;
+
+        // Disparo Meta Pixel
+        fbq('track', 'CompleteRegistration', {}, { eventID: eventId });
+
+        // Disparo Meta CAPI + Kommo em paralelo
+        await Promise.allSettled([
+          fetch('https://jp-api-iv.vercel.app/api/lead', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fbp, fbc, userAgent: navigator.userAgent, eventId })
+          }),
+          fetch('https://jp-api-iv.vercel.app/api/kommo-lead', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fbclid, fbp, fbc, pageUrl: window.location.href })
+          })
+        ]);
+      }
+      </script>
+      <noscript><img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=1290557609656779&ev=PageView&noscript=1"
+      /></noscript>
+
+      <style>
+          @import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,900;1,900&display=swap');
+
+          :root {
+              --primary: #00ff88;
+              --bg: #020202;
+          }
+
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+
+          body {
+              background-color: var(--bg);
+              color: #fff;
+              overflow-x: hidden;
+              min-height: 100vh;
+              font-family: 'Arial', sans-serif;
+          }
+
+          .lp-wrapper {
               position: relative;
-              z-index: 10;                                                                                                                                                                 
-              width: 100%;                                                                                                                                                               
-              min-height: 100vh;          
+              z-index: 10;
+              width: 100%;
+              min-height: 100vh;
               display: flex;
-              flex-direction: column;                                                                                                                                                      
+              flex-direction: column;
               justify-content: space-between;
-              padding: 30px 0;                                                                                                                                                             
-              background:                                                                                                                                                                
+              padding: 30px 0;
+              background:
                   linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)),
                   url('api-iv.webp') center/cover no-repeat fixed;
-          }                                                                                                                                                                                
-                                          
-          .header-section { width: 100%; text-align: center; }                                                                                                                             
-                                                                                                                                                                                           
-          .section-label {                                                                                                                                                                 
-              font-size: 11px;                                                                                                                                                             
-              text-transform: uppercase;                                                                                                                                                 
-              color: var(--primary);          
-              letter-spacing: 3px;        
+          }
+
+          .header-section { width: 100%; text-align: center; }
+
+          .section-label {
+              font-size: 11px;
+              text-transform: uppercase;
+              color: var(--primary);
+              letter-spacing: 3px;
               margin-bottom: 10px;
-              font-weight: bold;                                                                                                                                                           
-          }                                   
-                                                                                                                                                                                           
-          .carousel-container { display: flex; width: 100%; overflow: hidden; padding: 10px 0; }                                                                                         
-          .carousel-track {                                                                                                                                                                
+              font-weight: bold;
+          }
+
+          .carousel-container { display: flex; width: 100%; overflow: hidden; padding: 10px 0; }
+          .carousel-track {
               display: flex;
-              gap: 15px;                                                                                                                                                                   
-              animation: scroll 35s linear infinite;                                                                                                                                     
-              padding-left: 15px;                                                                                                                                                          
-              width: max-content;                                                                                                                                                        
-          }                               
+              gap: 15px;
+              animation: scroll 35s linear infinite;
+              padding-left: 15px;
+              width: max-content;
+          }
 
-          @keyframes scroll {                                                                                                                                                              
+          @keyframes scroll {
               0% { transform: translateX(0); }
-              100% { transform: translateX(-50%); }                                                                                                                                        
-          }                                                                                                                                                                              
+              100% { transform: translateX(-50%); }
+          }
 
-          .game-card {                                                                                                                                                                     
+          .game-card {
               background: rgba(255, 255, 255, 0.05);
-              backdrop-filter: blur(10px);                                                                                                                                                 
-              -webkit-backdrop-filter: blur(10px);                                                                                                                                       
-              min-width: 220px;           
+              backdrop-filter: blur(10px);
+              -webkit-backdrop-filter: blur(10px);
+              min-width: 220px;
               padding: 15px;
-              border-radius: 20px;                                                                                                                                                         
+              border-radius: 20px;
               border: 1px solid rgba(255, 255, 255, 0.1);
-          }                                                                                                                                                                                
-                                                                                                                                                                                         
-          .teams-row { display: flex; align-items: center; justify-content: center; gap: 15px; }                                                                                           
+          }
+
+          .teams-row { display: flex; align-items: center; justify-content: center; gap: 15px; }
           .team { display: flex; flex-direction: column; align-items: center; min-width: 70px; }
-          .team img { width: 35px; height: 35px; object-fit: contain; margin-bottom: 5px; }                                                                                                
-          .team span { font-size: 11px; font-weight: bold; white-space: nowrap; }                                                                                                          
+          .team img { width: 35px; height: 35px; object-fit: contain; margin-bottom: 5px; }
+          .team span { font-size: 11px; font-weight: bold; white-space: nowrap; }
           .vs { font-weight: 900; color: var(--primary); font-size: 14px; }
-                                                                                                                                                                                           
-          .headline {                                                                                                                                                                    
-              font-family: 'Kanit', sans-serif;                                                                                                                                            
-              font-size: clamp(45px, 12vw, 60px);                                                                                                                                          
-              font-weight: 900;                                                                                                                                                            
-              font-style: italic;                                                                                                                                                          
-              text-transform: uppercase;                                                                                                                                                 
-              margin-top: 120px;                                                                                                                                                           
-              line-height: 0.85;              
-              text-align: center;                                                                                                                                                          
-              text-shadow: 0 4px 20px rgba(0,0,0,1);                                                                                                                                     
-          }                                                                                                                                                                                
-                                          
-          .footer-section { width: 100%; display: flex; flex-direction: column; align-items: center; padding: 0 20px; margin-top: auto; margin-bottom: 60px; }                             
-                                                                                                                                                                                           
+
+          .headline {
+              font-family: 'Kanit', sans-serif;
+              font-size: clamp(45px, 12vw, 60px);
+              font-weight: 900;
+              font-style: italic;
+              text-transform: uppercase;
+              margin-top: 120px;
+              line-height: 0.85;
+              text-align: center;
+              text-shadow: 0 4px 20px rgba(0,0,0,1);
+          }
+
+          .footer-section { width: 100%; display: flex; flex-direction: column; align-items: center; padding: 0 20px; margin-top: auto; margin-bottom: 60px; }
+
           .alert-box {
-              width: 100%;                                                                                                                                                                 
-              max-width: 360px;                                                                                                                                                          
-              background: rgba(255, 255, 255, 0.08);                                                                                                                                       
-              border: 1px solid rgba(255, 255, 255, 0.1);                                                                                                                                
+              width: 100%;
+              max-width: 360px;
+              background: rgba(255, 255, 255, 0.08);
+              border: 1px solid rgba(255, 255, 255, 0.1);
               border-radius: 12px;
-              padding: 12px;                                                                                                                                                               
-              margin-bottom: 15px;            
-              backdrop-filter: blur(10px);                                                                                                                                                 
-          }                                                                                                                                                                              
-                                                                                                                                                                                           
+              padding: 12px;
+              margin-bottom: 15px;
+              backdrop-filter: blur(10px);
+          }
+
           .alert-box p { font-size: 12px; color: #fff; line-height: 1.4; text-align: center; }
-          .alert-box span { color: #ff8800; font-weight: bold; }                                                                                                                           
-                                                                                                                                                                                         
-          .btn-container { width: 100%; max-width: 360px; }                                                                                                                                
-  
-          .btn-border-beam {                                                                                                                                                               
-              position: relative; padding: 2px; border-radius: 18px; overflow: hidden; display: block; text-decoration: none;                                                            
+          .alert-box span { color: #ff8800; font-weight: bold; }
+
+          .btn-container { width: 100%; max-width: 360px; }
+
+          .btn-border-beam {
+              position: relative; padding: 2px; border-radius: 18px; overflow: hidden; display: block; text-decoration: none;
               box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
-          }                               
-                                              
-          .btn-border-beam::before {                                                                                                                                                       
+          }
+
+          .btn-border-beam::before {
               content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-              background: conic-gradient(transparent, transparent, var(--primary), transparent);                                                                                           
-              animation: rotate 3s linear infinite;                                                                                                                                      
-          }                                                                                                                                                                                
-                                                                                                                                                                                         
+              background: conic-gradient(transparent, transparent, var(--primary), transparent);
+              animation: rotate 3s linear infinite;
+          }
+
           @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-                                                                                                                                                                                           
+
           .btn-content {
-              position: relative; background: #00ff88; color: #000; padding: 20px; border-radius: 16px;                                                                                    
-              font-size: 18px; font-weight: 900; text-transform: uppercase; display: block; z-index: 5; text-align: center;                                                              
-          }                                   
-                                          
-      </style>                                                                                                                                                                             
-  </head>                                                                                                                                                                                  
-  <body>                                                                                                                                                                                   
-                                                                                                                                                                                           
-      <div class="lp-wrapper">                                                                                                                                                           
+              position: relative; background: #00ff88; color: #000; padding: 20px; border-radius: 16px;
+              font-size: 18px; font-weight: 900; text-transform: uppercase; display: block; z-index: 5; text-align: center;
+          }
+
+      </style>
+  </head>
+  <body>
+
+      <div class="lp-wrapper">
 
           <div class="header-section">
               <p class="section-label">Jogos do Dia</p>
-                                              
+
               <div class="carousel-container">
                   <div class="carousel-track">
-                      <div class="game-card">                                                                                                                                              
+                      <div class="game-card">
                           <div class="teams-row">
-                              <div class="team"><img src="barcelona.5b3712bd.svg"><span>Barcelona</span></div>                                                                             
-                              <div class="vs">VS</div>                                                                                                                                   
-                              <div class="team"><img src="celta.4b0928f2.svg"><span>Celta de Vigo</span></div>
-                          </div>              
-                      </div>                                                                                                                                                               
-                      <div class="game-card">
-                          <div class="teams-row">                                                                                                                                          
-                              <div class="team"><img src="bayern-munchen.3249740f.svg"><span>Bayern</span></div>                                                                         
-                              <div class="vs">VS</div>                                                                                                                                     
-                              <div class="team"><img src="bayer-leverkusen.292c0812.svg"><span>Leverkusen</span></div>                                                                   
-                          </div>              
-                      </div>                                                                                                                                                               
-                      <div class="game-card">
-                          <div class="teams-row">                                                                                                                                          
-                              <div class="team"><img src="flamengo.73505f83.svg"><span>Flamengo</span></div>                                                                             
-                              <div class="vs">VS</div>                                                                                                                                     
-                              <div class="team"><img src="vitoria.4d528a58.svg"><span>Vitória</span></div>                                                                               
-                          </div>
-                      </div>                                                                                                                                                               
-                      <div class="game-card">
-                          <div class="teams-row">                                                                                                                                          
-                              <div class="team"><img src="bahia.4916b15f.svg"><span>Bahia</span></div>                                                                                   
+                              <div class="team"><img src="barcelona.5b3712bd.svg"><span>Barcelona</span></div>
                               <div class="vs">VS</div>
-                              <div class="team"><img src="clube-do-remo.91e6fb3f.svg"><span>Remo</span></div>                                                                              
-                          </div>          
-                      </div>                                                                                                                                                               
-                                                                                                                                                                                           
+                              <div class="team"><img src="celta.4b0928f2.svg"><span>Celta de Vigo</span></div>
+                          </div>
+                      </div>
+                      <div class="game-card">
+                          <div class="teams-row">
+                              <div class="team"><img src="bayern-munchen.3249740f.svg"><span>Bayern</span></div>
+                              <div class="vs">VS</div>
+                              <div class="team"><img src="bayer-leverkusen.292c0812.svg"><span>Leverkusen</span></div>
+                          </div>
+                      </div>
+                      <div class="game-card">
+                          <div class="teams-row">
+                              <div class="team"><img src="flamengo.73505f83.svg"><span>Flamengo</span></div>
+                              <div class="vs">VS</div>
+                              <div class="team"><img src="vitoria.4d528a58.svg"><span>Vitória</span></div>
+                          </div>
+                      </div>
+                      <div class="game-card">
+                          <div class="teams-row">
+                              <div class="team"><img src="bahia.4916b15f.svg"><span>Bahia</span></div>
+                              <div class="vs">VS</div>
+                              <div class="team"><img src="clube-do-remo.91e6fb3f.svg"><span>Remo</span></div>
+                          </div>
+                      </div>
+
                       <div class="game-card"><div class="teams-row"><div class="team"><img src="barcelona.5b3712bd.svg"><span>Barcelona</span></div><div class="vs">VS</div><div 
-  class="team"><img src="celta.4b0928f2.svg"><span>Celta de Vigo</span></div></div></div>                                                                                                  
-                      <div class="game-card"><div class="teams-row"><div class="team"><img src="bayern-munchen.3249740f.svg"><span>Bayern</span></div><div class="vs">VS</div><div       
-  class="team"><img src="bayer-leverkusen.292c0812.svg"><span>Leverkusen</span></div></div></div>                                                                                          
+  class="team"><img src="celta.4b0928f2.svg"><span>Celta de Vigo</span></div></div></div>
+                      <div class="game-card"><div class="teams-row"><div class="team"><img src="bayern-munchen.3249740f.svg"><span>Bayern</span></div><div class="vs">VS</div><div 
+  class="team"><img src="bayer-leverkusen.292c0812.svg"><span>Leverkusen</span></div></div></div>
                       <div class="game-card"><div class="teams-row"><div class="team"><img src="flamengo.73505f83.svg"><span>Flamengo</span></div><div class="vs">VS</div><div 
-  class="team"><img src="vitoria.4d528a58.svg"><span>Vitória</span></div></div></div>                                                                                                      
+  class="team"><img src="vitoria.4d528a58.svg"><span>Vitória</span></div></div></div>
                       <div class="game-card"><div class="teams-row"><div class="team"><img src="bahia.4916b15f.svg"><span>Bahia</span></div><div class="vs">VS</div><div class="team"><img 
   src="clube-do-remo.91e6fb3f.svg"><span>Remo</span></div></div></div>
-                  </div>                                                                                                                                                                   
-              </div>                                                                                                                                                                     
-                                                                                                                                                                                           
-              <h1 class="headline">BILHETE<br><span style="color: var(--primary)">LIBERADO</span></h1>                                                                                   
-          </div>                                                                                                                                                                           
-                                                                                                                                                                                         
-          <div class="footer-section">                                                                                                                                                     
+                  </div>
+              </div>
+
+              <h1 class="headline">BILHETE<br><span style="color: var(--primary)">LIBERADO</span></h1>
+          </div>
+
+          <div class="footer-section">
               <div class="alert-box">
-                  <p><span>*</span> Fale comigo agora, e em breve vou mandar uma oportunidade para nos forrarmos juntos!</p>                                                               
-              </div>                                                                                                                                                                     
-                                          
+                  <p><span>*</span> Fale comigo agora, e em breve vou mandar uma oportunidade para nos forrarmos juntos!</p>
+              </div>
+
               <div class="btn-container">
-                  <a href="https://ri.redirecionar.online/" class="btn-border-beam" onclick="dispararLead()">                                                                              
+                  <a href="https://ri.redirecionar.online/" class="btn-border-beam" onclick="dispararLead()">
                       <span class="btn-content">🔥 PEGAR BILHETE</span>
-                  </a>                                                                                                                                                                     
-              </div>                                                                                                                                                                     
-          </div>                                                                                                                                                                           
-  
-      </div>                                                                                                                                                                               
-                                                                                                                                                                                         
-  </body>                                     
+                  </a>
+              </div>
+          </div>
+
+      </div>
+
+  </body>
   </html>
