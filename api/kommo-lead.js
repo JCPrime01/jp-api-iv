@@ -1,6 +1,6 @@
   import Redis from 'ioredis';                                                                                                                                                             
                                                                                                                                                                                          
-  const redis = new Redis(process.env.URL_REDIS);                                                                                                                                          
+  const redis = new Redis(process.env.REDIS_URL);                                                                                                                                          
                                                  
   export default async function handler(req, res) {                                                                                                                                        
     if (req.method !== 'POST') return res.status(405).end();                                                                                                                             
