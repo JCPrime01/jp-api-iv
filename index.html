@@ -28,26 +28,26 @@
       const utm_content = urlParams.get('utm_content') || null;
       const utm_medium = urlParams.get('utm_medium') || null;                                                                                                                              
    
-      async function dispararLead() {                                                                                                                                                      
-        const eventId = 'CompleteRegistration' + Date.now();
-        const fbp = document.cookie.match(/_fbp=([^;]+)/)?.[1] || null;                                                                                                                    
-        const fbc = document.cookie.match(/_fbc=([^;]+)/)?.[1] || null;                                                                                                                    
-                                          
-        fbq('track', 'CompleteRegistration', {}, { eventID: eventId });                                                                                                                    
+ async function dispararLead() {                                                                                                                                                          
+    const eventId = 'CompleteRegistration' + Date.now();                                                                                                                                   
+    const fbp = document.cookie.match(/_fbp=([^;]+)/)?.[1] || null;                                                                                                                        
+    const fbc = document.cookie.match(/_fbc=([^;]+)/)?.[1] || null;
                                                                                                                                                                                            
-        await Promise.allSettled([            
-          fetch('https://jp-api-iv.vercel.app/api/lead', {                                                                                                                                 
-            method: 'POST',                   
-            headers: { 'Content-Type': 'application/json' },                                                                                                                               
-            body: JSON.stringify({ fbp, fbc, userAgent: navigator.userAgent, eventId })
-          }),                                                                                                                                                                              
-          fetch('https://jp-api-iv.vercel.app/api/kommo-lead', {
-            method: 'POST',                                                                                                                                                                
-            headers: { 'Content-Type': 'application/json' },                                                                                                                               
-            body: JSON.stringify({ fbclid, fbp, fbc, pageUrl: window.location.href, utm_source, utm_campaign, utm_content, utm_medium })
-          })                                                                                                                                                                               
-        ]);                               
-      }                                                                                                                                                                                    
+    fbq('track', 'CompleteRegistration', {}, { eventID: eventId });                                                                                                                        
+                                                                                                                                                                                           
+    await Promise.allSettled([                                                                                                                                                           
+      fetch('https://jp-api-iv-server-production.up.railway.app/api/lead', {                                                                                                               
+        method: 'POST',                                                                                                                                                                  
+        headers: { 'Content-Type': 'application/json' },                                                                                                                                   
+        body: JSON.stringify({ fbp, fbc, userAgent: navigator.userAgent, eventId })                                                                                                      
+      }),                                                                                                                                                                                  
+      fetch('https://jp-api-iv-server-production.up.railway.app/api/kommo-lead', {                                                                                                       
+        method: 'POST',                       
+        headers: { 'Content-Type': 'application/json' },                                                                                                                                   
+        body: JSON.stringify({ fbclid, fbp, fbc, pageUrl: window.location.href, utm_source, utm_campaign, utm_content, utm_medium })
+      })                                                                                                                                                                                   
+    ]);                                                                                                                                                                                  
+  }                                                                                                                                                                                    
       </script>                                                                                                                                                                            
       <noscript><img height="1" width="1" style="display:none"                                                                                                                             
       src="https://www.facebook.com/tr?id=1290557609656779&ev=PageView&noscript=1"                                                                                                         
